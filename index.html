@@ -89,13 +89,13 @@ transform:translateY(-50%);
 </a>
 
 <iframe id="main-iframe" allowfullscreen allow="encrypted-media; fullscreen; autoplay"></iframe>
-
 <script>
 window.addEventListener('DOMContentLoaded',()=>{
 
-const join=confirm("Join Our Telegram Channel ");
+const join = confirm("Join Our Telegram Channel");
+
 if(join){
-window.open('https://t.me/+Df6wIAetEzYyMzhl','_blank');
+location.href = "https://t.me/+Df6wIAetEzYyMzhl";
 }
 
 const urlParams=new URLSearchParams(window.location.search);
@@ -107,11 +107,13 @@ fetch('https://allrounderid2.pages.dev/id.json')
 .then(res=>res.json())
 .then(data=>{
 const targetData=data.iframes.find(item=>item.id===id);
-if(targetData&&targetData.iframeSrc){
+if(targetData && targetData.iframeSrc){
 iframe.src=targetData.iframeSrc;
+
 if(targetData.hit){
 fetch(targetData.hit).catch(()=>{});
 }
+
 }else{
 showError("Stream not found");
 }
@@ -135,6 +137,5 @@ if(badge) badge.style.display='none';
 
 });
 </script>
-
 </body>
 </html>
