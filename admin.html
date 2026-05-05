@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+  <title>✨ StreamCraft | Admin Panel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at 10% 20%, #0a0c12, #030507);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+      padding: 20px 16px 40px;
+      color: #eef5ff;
+    }
+
+    /* glassmorphism + smooth cards */
+    .glass-card {
+      background: rgba(18, 25, 40, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(72, 120, 255, 0.25);
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      transition: all 0.2s ease;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FFFFFF, #7aaaff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 4px solid #3b82f6;
+      padding-left: 12px;
+    }
+
+    .input-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+      color: #9ab3ff;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, button {
+      font-family: inherit;
+      font-size: 1rem;
+      border: none;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      background: #0f121cb3;
+      border: 1px solid #2c3850;
+      border-radius: 1.25rem;
+      color: #ffffff;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      background: #0a0e18;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    }
+
+    button {
+      background: linear-gradient(105deg, #2563eb, #1e40af);
+      padding: 14px 18px;
+      border-radius: 2rem;
+      font-weight: 600;
+      color: white;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 80, 255, 0.3);
+      transition: transform 0.1s ease, box-shadow 0.2s;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .btn-outline {
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid #3b82f6;
+      box-shadow: none;
+      margin-top: 8px;
+    }
+
+    .btn-outline:active {
+      background: rgba(59,130,246,0.4);
+    }
+
+    .delete-btn {
+      background: linear-gradient(105deg, #dc2626, #9b2c2c);
+      box-shadow: 0 2px 8px rgba(220,38,38,0.3);
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      width: auto;
+    }
+
+    .stream-card {
+      background: rgba(12, 18, 28, 0.8);
+      backdrop-filter: blur(8px);
+      border-radius: 1.5rem;
+      margin-bottom: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #2e3a55;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .stream-card:active {
+      background: #1e293bb3;
+      transform: scale(0.99);
+    }
+
+    .stream-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stream-id {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.2px;
+      background: linear-gradient(120deg, #cbd5ff, #fff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .stream-meta {
+      font-size: 0.7rem;
+      color: #86a3e0;
+      font-family: monospace;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .link-card {
+      background: #0b0f1ad9;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid #2b4875;
+    }
+
+    .generated-link {
+      word-break: break-all;
+      background: #010409;
+      padding: 12px;
+      border-radius: 1.2rem;
+      font-size: 0.8rem;
+      font-family: monospace;
+      margin: 10px 0;
+      border-left: 3px solid #3b82f6;
+    }
+
+    a {
+      color: #7aaef9;
+      text-decoration: none;
+    }
+
+    .copy-badge {
+      background: #1f2a48;
+      padding: 8px 16px;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      opacity: 0.7;
+      font-style: italic;
+    }
+
+    .toast-notify {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0e1e32e6;
+      backdrop-filter: blur(20px);
+      padding: 12px 24px;
+      border-radius: 60px;
+      color: white;
+      font-weight: 500;
+      z-index: 200;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      border: 1px solid #3b82f6;
+      font-size: 0.85rem;
+    }
+
+    hr {
+      margin: 20px 0;
+      border-color: #1e2a44;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px 14px 32px;
+      }
+      .glass-card {
+        padding: 1rem;
+      }
+      .stream-id {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+  <h2>✨ STREAMCRAFT</h2>
+  <div style="background: #1a253ab3; padding: 6px 12px; border-radius: 40px; font-size: 11px; font-weight: 500;">ADMIN DASH</div>
+</div>
+
+<!-- Token section -->
+<div class="glass-card">
+  <label>🔐 GITHUB PERSONAL ACCESS TOKEN</label>
+  <input type="password" id="token" placeholder="ghp_xxxxxx" autocomplete="off">
+  <div class="flex-row" style="margin-top: 8px;">
+    <button onclick="saveToken()" style="background: #334155;">💾 SAVE TOKEN</button>
+    <button onclick="loadData()" style="background: linear-gradient(135deg, #2563eb, #4f46e5);">📡 LOAD STREAMS</button>
+  </div>
+  <small style="opacity: 0.6; display: block; margin-top: 10px;">🔑 Token needs 'repo' scope — stored locally only.</small>
+</div>
+
+<!-- Add / Edit block -->
+<div class="glass-card">
+  <h3>✏️ MANAGE STREAM</h3>
+  <div class="input-group">
+    <label>📛 Stream ID (unique)</label>
+    <input id="id" placeholder="e.g. fox, disney, hbo" autocomplete="off">
+  </div>
+  <div class="input-group">
+    <label>🎬 MPD / MANIFEST URL</label>
+    <input id="mpd" placeholder="https://example.com/stream.mpd">
+  </div>
+  <div class="input-group">
+    <label>🔑 Key ID (hex)</label>
+    <input id="keyId" placeholder="6f5e...">
+  </div>
+  <div class="input-group">
+    <label>🗝️ Content Key</label>
+    <input id="key" placeholder="a1b2c3...">
+  </div>
+  <button onclick="saveStream()">💎 SAVE / UPDATE STREAM</button>
+</div>
+
+<!-- generated dynamic link preview -->
+<div id="generatedLink"></div>
+
+<!-- streams list -->
+<div class="glass-card" style="padding-bottom: 0.5rem;">
+  <h3>📺 ALL STREAMS</h3>
+  <div id="list" style="max-height: 420px; overflow-y: auto; padding-right: 4px;"></div>
+</div>
+
+<script>
+  // CONFIG
+  const OWNER = "dilzyking";
+  const REPO = "allrounderlive";
+  const FILE_PATH = "id.json";
+
+  let fileSha = "";
+  let jsonData = { streams: [] };
+
+  // --- Helpers ---
+  function showToast(msg, isError = false) {
+    let toast = document.querySelector('.toast-notify');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'toast-notify';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.background = isError ? '#b91c1ce6' : '#0e2a3fe6';
+    setTimeout(() => {
+      toast.style.opacity = '0';
+    }, 2300);
+  }
+
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('📋 Link copied to clipboard!');
+    }).catch(() => {
+      showToast('⚠️ Manual copy needed', true);
+    });
+  }
+
+  // save token locally
+  window.onload = () => {
+    const savedToken = localStorage.getItem("gh_token");
+    if (savedToken) document.getElementById("token").value = savedToken;
+    // try to auto load if token present?
+    if (savedToken) {
+      // gentle load but don't spam error, do on demand
+    }
+    // set up enter key shortcuts (optional)
+    const inputs = ['id', 'mpd', 'keyId', 'key'];
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveStream(); });
+    });
+  };
+
+  function saveToken() {
+    const token = document.getElementById("token").value.trim();
+    if (!token) { showToast("❌ Token cannot be empty", true); return; }
+    localStorage.setItem("gh_token", token);
+    showToast("✅ Token saved securely");
+  }
+
+  // fetch from GitHub
+  async function loadData() {
+    const token = document.getElementById("token").value.trim();
+    if (!token) { showToast("🔑 First, save your GitHub token", true); return; }
+
+    showToast("⏳ Fetching streams...");
+    try {
+      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github.v3+json" }
+      });
+      if (!res.ok) {
+        if (res.status === 404) {
+          // file not exists - create empty structure
+          jsonData = { streams: [] };
+          fileSha = null;
+          renderList();
+          showToast("⚠️ id.json not found, starting fresh", true);
+          return;
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const file = await res.json();
+      fileSha = file.sha;
+      const decoded = atob(file.content);
+      jsonData = JSON.parse(decoded);
+      if (!jsonData.streams) jsonData.streams = [];
+      renderList();
+      showToast(`📡 Loaded ${jsonData.streams.length} streams`);
+    } catch (err) {
+      console.error(err);
+      showToast("❌ Failed to load from GitHub", true);
+    }
+  }
+
+  function renderList() {
+    const container = document.getElementById("list");
+    container.innerHTML = "";
+    if (!jsonData.streams || jsonData.streams.length === 0) {
+      container.innerHTML = `<div class="empty-state">✨ No streams yet.<br>Add your first stream above ✨</div>`;
+      return;
+    }
+    jsonData.streams.forEach((stream, idx) => {
+      const card = document.createElement("div");
+      card.className = "stream-card";
+      card.innerHTML = `
+        <div class="stream-info">
+          <span class="stream-id">🎥 ${escapeHtml(stream.id)}</span>
+          <span class="stream-meta">${truncate(stream.mpd || 'No MPD', 45)}</span>
+        </div>
+        <button class="delete-btn" data-index="${idx}" style="background: #c2410c;">🗑️</button>
+      `;
+      // click on card (except delete button) to fill form
+      const infoDiv = card.querySelector('.stream-info');
+      infoDiv.style.cursor = 'pointer';
+      infoDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fillFormById(stream.id);
+      });
+      const delBtn = card.querySelector('.delete-btn');
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteStreamConfirm(idx);
+      });
+      container.appendChild(card);
+    });
+  }
+
+  function truncate(str, len) {
+    if (!str) return "—";
+    return str.length > len ? str.slice(0, len-2) + "..." : str;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function fillFormById(id) {
+    const stream = jsonData.streams.find(s => s.id === id);
+    if (!stream) return;
+    document.getElementById("id").value = stream.id || "";
+    document.getElementById("mpd").value = stream.mpd || "";
+    document.getElementById("keyId").value = stream.keyId || "";
+    document.getElementById("key").value = stream.key || "";
+    showToast(`✏️ Editing "${stream.id}"`);
+    document.getElementById("id").focus();
+  }
+
+  // push to github core function
+  async function pushUpdateToGitHub(updatedJson, changeId, actionMsg = "Update") {
+    const token = document.getElementById("token").value.trim();
+    if (!token) { showToast("GitHub token missing", true); return false; }
+    const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(updatedJson, null, 2))));
+    const payload = {
+      message: `${actionMsg}: ${changeId}`,
+      content: contentBase64,
+    };
+    if (fileSha) payload.sha = fileSha;
+    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+    try {
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const result = await res.json();
+        fileSha = result.content.sha;
+        return true;
+      } else {
+        const errText = await res.text();
+        console.error(errText);
+        showToast(`❌ GitHub error: ${res.status}`, true);
+        return false;
+      }
+    } catch (err) {
+      showToast("Network error during push", true);
+      return false;
+    }
+  }
+
+  // Save / Update core
+  async function saveStream() {
+    const token = document.getElementById("token").value.trim();
+    if (!token) { showToast("🔑 Please save token first", true); return; }
+    const id = document.getElementById("id").value.trim();
+    if (!id) { showToast("Stream ID is required", true); return; }
+    const mpd = document.getElementById("mpd").value.trim();
+    const keyId = document.getElementById("keyId").value.trim();
+    const key = document.getElementById("key").value.trim();
+
+    // make sure jsonData is loaded (if empty but token exists, try load first)
+    if (!jsonData.streams) jsonData.streams = [];
+
+    const existingIndex = jsonData.streams.findIndex(s => s.id === id);
+    if (existingIndex !== -1) {
+      jsonData.streams[existingIndex] = { id, mpd, keyId, key };
+    } else {
+      jsonData.streams.push({ id, mpd, keyId, key });
+    }
+
+    const success = await pushUpdateToGitHub(jsonData, id, existingIndex !== -1 ? "Update" : "Create");
+    if (success) {
+      showToast(`✅ Stream "${id}" saved to GitHub`);
+      // Reload fresh from GitHub to get new sha + consistency
+      await refreshDataAfterPush();
+      // generate new link for current id
+      generateLinkPreview(id);
+    } else {
+      showToast("⚠️ Failed to update GitHub", true);
+    }
+  }
+
+  async function deleteStreamConfirm(idx) {
+    const streamToDelete = jsonData.streams[idx];
+    if (!streamToDelete) return;
+    const confirmDel = confirm(`🗑️ Delete stream "${streamToDelete.id}" permanently?`);
+    if (!confirmDel) return;
+    jsonData.streams.splice(idx, 1);
+    const success = await pushUpdateToGitHub(jsonData, streamToDelete.id, "Delete");
+    if (success) {
+      showToast(`🗑️ Removed ${streamToDelete.id}`);
+      await refreshDataAfterPush();
+      document.getElementById("generatedLink").innerHTML = "";
+      // optional: clear form if that id was active
+      const currentIdField = document.getElementById("id").value;
+      if (currentIdField === streamToDelete.id) {
+        document.getElementById("id").value = "";
+        document.getElementById("mpd").value = "";
+        document.getElementById("keyId").value = "";
+        document.getElementById("key").value = "";
+      }
+    } else {
+      showToast("Delete failed", true);
+    }
+  }
+
+  async function refreshDataAfterPush() {
+    const token = document.getElementById("token").value.trim();
+    if (!token) return;
+    try {
+      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const file = await res.json();
+        fileSha = file.sha;
+        const decoded = atob(file.content);
+        jsonData = JSON.parse(decoded);
+        if (!jsonData.streams) jsonData.streams = [];
+        renderList();
+      } else {
+        // if 404 but we had content, keep but force sha null
+        if(res.status === 404) fileSha = null;
+        renderList();
+      }
+    } catch(e) {
+      console.warn(e);
+      renderList();
+    }
+  }
+
+  function generateLinkPreview(id) {
+    if (!id) return;
+    const pageUrl = `https://toxify-stream-tv.pages.dev/p1/?id=${encodeURIComponent(id)}`;
+    const linkContainer = document.getElementById("generatedLink");
+    linkContainer.innerHTML = `
+      <div class="link-card">
+        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+          <span>🔗 🔥 STREAM LINK READY</span>
+        </div>
+        <div class="generated-link">
+          ${pageUrl}
+        </div>
+        <div class="flex-row" style="margin-top: 12px; gap: 12px;">
+          <button onclick="window.copyToClipboardGlobal('${pageUrl}')" style="background:#1f3a5f; padding:10px;">📋 COPY LINK</button>
+          <a href="${pageUrl}" target="_blank" style="flex:1; text-align:center; background:#1e2a47; padding:10px; border-radius:2rem; font-size:0.9rem;">▶️ WATCH STREAM</a>
+        </div>
+        <small style="display:block; margin-top: 12px;">✨ Use this URL for playback / embed ✨</small>
+      </div>
+    `;
+  }
+
+  // expose global copy for dynamic button
+  window.copyToClipboardGlobal = (link) => {
+    copyToClipboard(link);
+  };
+
+  // after saving stream, also show in UI
+  async function saveStreamWithLink() {
+    await saveStream();
+    const idVal = document.getElementById("id").value.trim();
+    if (idVal) generateLinkPreview(idVal);
+  }
+
+  // override saveStream to include link preview and reload
+  const originalSave = saveStream;
+  window.saveStream = async function() {
+    const idVal = document.getElementById("id").value.trim();
+    if (!idVal) { showToast("Stream ID missing", true); return; }
+    await originalSave();
+    // after push, manually trigger link preview (because refresh loads data)
+    setTimeout(() => {
+      const curId = document.getElementById("id").value.trim();
+      if (curId) generateLinkPreview(curId);
+    }, 400);
+  };
+
+  // Enhanced delete binding also after refresh
+  window.deleteStreamConfirm = deleteStreamConfirm;
+
+  // Load default preview if any stream selected after load (not needed)
+  // optional: double click card copy id link? extra goodies
+  function generateDirectLinkFromList(id) {
+    if(id) generateLinkPreview(id);
+  }
+
+  // Patch renderList to add double click or context menu for link ?
+  // but we have fillForm + we also generate link preview on card long press? add click gesture
+  const oldRender = renderList;
+  window.renderList = renderList;
+
+  // expose loadData globally
+  window.loadData = loadData;
+
+  // token indicator
+  console.log("🔥 Streams Admin — Ultra UI Ready");
+</script>
+
+<!-- small helper for unicode to base64 safe -->
+</body>
+  </html>
